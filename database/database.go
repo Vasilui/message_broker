@@ -24,7 +24,7 @@ func init() {
 	var err error
 
 	// Подключаемя к базе данных
-	db, err = sql.Open("postgres", "user=postgres password=234416 dbname=postgres sslmode=disable")
+	db, err = sql.Open("postgres", "user=postgres dbname=postgres sslmode=disable")
 	PanicOnErr(err)
 
 	//Пингуем базу
