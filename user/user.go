@@ -7,7 +7,7 @@ import (
 )
 
 func GetUser(c *fiber.Ctx) error {
-	id := c.Params("id")
+	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
 	res := database.GetUserById(id)
 	if len(res) == len([]byte("")) {
 		return fiber.ErrBadRequest
@@ -21,12 +21,16 @@ func GetAllUsers(c *fiber.Ctx) error {
 }
 
 func GetAmount(c *fiber.Ctx) error {
-	id := c.Params("id")
+	type balance struct {
+		Id      int64 `json:"id"`
+		Balance int32 `json:"balance"`
+	}
+	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
 	res := database.GetAmountById(id)
-	if len(res) == len([]byte("")) {
+	if res == -1 {
 		return fiber.ErrBadRequest
 	}
-	return c.Send(res)
+	return c.JSON(balance{id, res})
 }
 
 func AddUser(c *fiber.Ctx) error {
@@ -38,7 +42,7 @@ func AddUser(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 	id := database.CreateUser(user.Name, user.Balance)
-	if id == "" {
+	if id == -1 {
 		return fiber.ErrBadRequest
 	}
 	newUser := database.User{Id: id, Name: user.Name, Balance: user.Balance}

@@ -10,7 +10,7 @@ import (
 )
 
 type User struct {
-	Id      string `json:"id"`
+	Id      int64  `json:"id"`
 	Name    string `json:"username"`
 	Balance int32  `json:"balance"`
 }
@@ -24,7 +24,7 @@ func init() {
 	var err error
 
 	// Подключаемя к базе данных
-	db, err = sql.Open("postgres", "user=postgres dbname=postgres sslmode=disable")
+	db, err = sql.Open("postgres", "user=postgres password=234416 dbname=postgres sslmode=disable")
 	PanicOnErr(err)
 
 	//Пингуем базу
@@ -118,7 +118,7 @@ func InitData() {
 	}
 }
 
-func GetUserById(idUser string) []byte {
+func GetUserById(idUser int64) []byte {
 	for i := 0; i < len(users); i++ {
 		if users[i].Id == idUser {
 			productsJson, _ := json.Marshal(users[i])
@@ -128,14 +128,13 @@ func GetUserById(idUser string) []byte {
 	return []byte("")
 }
 
-func GetAmountById(idUser string) []byte {
+func GetAmountById(idUser int64) int32 {
 	for i := 0; i < len(users); i++ {
 		if users[i].Id == idUser {
-			productJson, _ := json.Marshal(users[i].Balance)
-			return productJson
+			return users[i].Balance
 		}
 	}
-	return []byte("")
+	return -1
 }
 
 func GetAllUsers() []byte {
@@ -143,12 +142,12 @@ func GetAllUsers() []byte {
 	return productsJson
 }
 
-func CreateUser(name string, balance int32) string {
+func CreateUser(name string, balance int32) int64 {
 	if balance < 0 {
-		return ""
+		return -1
 	}
 	var err error
-	var lastId string
+	var lastId int64
 
 	err = db.QueryRow("INSERT INTO users (username, balance) VALUES ($1, $2) RETURNING id",
 		name,

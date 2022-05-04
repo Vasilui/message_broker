@@ -1,0 +1,187 @@
+openapi: "3.0.2"
+
+info:
+  version: "1.0"
+  title: "Message Broker API"
+  description: "Описание API для тестовогозадания проекта, реализующего брокер сообщений"
+  contact:
+    name: "Кузьминых Василий Сергеевич"
+    email: "ya@vkuzminyh.ru"
+  license: 
+    name: "MIT"
+servers:
+- url: "http://localhost:3333/api/v1/"
+
+paths:
+  /user:
+    get:
+      summary: "Получение информации о всех пользователях"
+      description: "Возвращает список всех зарегестрированных пользователей"
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: Sample
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                      description: "id пользователя"
+                    username:
+                      type: string
+                      example: "Vasya"
+                      description: "Имя пользователя"
+                    balance:
+                      type: integer
+                      example: 500
+                      description: "Баланс пользователя"
+    
+    post:
+      summary: "Добавление нового пользователя"
+      description: "Запрос на создание нового пользователя"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            example:
+              username: "Vasya"
+              amount: 1000
+        
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: Sample
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 2
+                    description: "id созданного поьлзователя"
+                  username:
+                    type: string
+                    example: "Vasya"
+                    description: "Имя созданного пользователя"
+                  balance:
+                    type: integer
+                    example: 1000
+                    description: "Баланс созданного пользователя"
+  
+  /user/{id}:
+    get:
+      summary: "Получение информации о пользователе"
+      description: "Возвращает информации о пользователей с переданным id"
+      parameters:
+        - in: path
+          name: id
+          description: "id пользователя"
+          required: true
+          schema:
+            type: integer
+            example: 4
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: Sample
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 4
+                    description: "id пользователя"
+                  username:
+                    type: string
+                    example: "Vasya"
+                    description: "Имя пользователя"
+                  balance:
+                    type: integer
+                    example: 500
+                    description: "Баланс пользователя"
+        400:
+          description: Bad request
+  
+  /user/{id}/amount:
+    get:
+      summary: "Получение баланса пользователя"
+      description: "Получение баланса пользователя по переданному id"
+      parameters:
+      - in: path
+        name: id
+        description: "id пользователя"
+        required: true
+        schema:
+          type: integer
+          example: 1
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                title: Sample
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                    description: "id пользователя"
+                  balance:
+                    type: integer
+                    example: 500
+                    description: "Баланс пользователя"
+        400:
+          description: Bad request
+    
+    post:
+      summary: "Изменение баланса"
+      description: "Пополнение и списание с бланса пользователя"
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          description: "id пользователя"
+          example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Alter_amount'
+            example:
+              type: "replenishment"
+              amount: 500
+      responses:
+        200:
+          description: Successful response
+        400:
+          description: Bad request
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        amount:
+          type: integer
+    Alter_amount:
+      type: object
+      properties:
+        type:
+          type: string
+        amount:
+          type: integer
+          
